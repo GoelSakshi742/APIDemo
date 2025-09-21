@@ -1,43 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using APIDemo.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace APIDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ToyController : ControllerBase
+    public class ToyController(ToyDbContext context) : ControllerBase
     {
-        static private List<Toy> toys = new List<Toy>
-        {
-            new Toy
-            {  Id = 1,
-                ToyName = "Millennium Falcon",
-                Brand = "LEGO",
-                Model = "75257"
-            },
-            new Toy
-            {  Id = 2,
-                ToyName = "Barbie Dreamhouse",
-                Brand = "Mattel",
-                Model = "FHY73"
-            },
-            new Toy
-            { Id = 3,
-                ToyName = "Hot Wheels Track Builder",
-                Brand = "Mattel",
-                Model = "GGH70"
-            },
-        };
+        private readonly ToyDbContext _context = context;
+
         [HttpGet]
-        public ActionResult <List<Toy>> GetToys() 
+        public async Task<ActionResult <List<Toy>>> GetToys() 
         {
-            return Ok(toys);
+            return Ok(await _context.Toys.ToListAsync());
         }
         [HttpGet("{id}")]
-        public ActionResult<Toy> GetToyByID(int id)
-        { 
-            var toy = toys.FirstOrDefault(t=>t.Id == id);
+        public async Task<ActionResult<Toy>> GetToyByID(int id)
+        {
+            var toy = await _context.Toys.FindAsync(id);
             if (toy == null)
             {
                 return NotFound();
@@ -47,22 +31,23 @@ namespace APIDemo.Controllers
                 return Ok(toy);
             }
 
-        }
+         }
         [HttpPost]
-        public ActionResult<Toy> AddToys(Toy newToy)
+        public async Task<ActionResult<Toy>> AddToys(Toy newToy)
         {
             if (newToy is null)
             {
                 return BadRequest();
             }
-            newToy.Id = toys.Max(t => t.Id) + 1;
-            toys.Add(newToy);
+            _context.Toys.Add(newToy);
+            await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetToyByID), new { id = newToy.Id }, newToy);
         }
         [HttpPut("{id}")]
-        public ActionResult UpdateToy(int id, Toy updateToy)
+        public async Task<ActionResult> UpdateToy(int id, Toy updateToy)
         {
-            var toy = toys.FirstOrDefault(t => t.Id == id);
+            var toy = await _context.Toys.FindAsync(id);
             if (toy == null)
             {
                 return NotFound();
@@ -70,15 +55,20 @@ namespace APIDemo.Controllers
             toy.Brand = updateToy.Brand;
             toy.Model = updateToy.Model;
             toy.ToyName = updateToy.ToyName;
+
+            await _context.SaveChangesAsync();
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public ActionResult DeleteToy(int id)
+        public async Task<ActionResult> DeleteToy(int id)
         {
-            var toy = toys.FirstOrDefault(t => t.Id == id);
-            if(toy == null)
+            var toy = await _context.Toys.FindAsync(id);
+            if (toy == null)
+            {
                 return NotFound();
-            toys.Remove(toy);
+            }
+            _context.Toys.Remove(toy);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }
