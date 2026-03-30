@@ -14,15 +14,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ToyDbContext>();
-    if (!db.Toys.Any())
-    {
-        db.Toys.AddRange(
-            new APIDemo.Toy { ToyName = "Millennium Falcon", Brand = "LEGO", Model = "75257" },
-            new APIDemo.Toy { ToyName = "Barbie Dreamhouse", Brand = "Mattel", Model = "FHY73" },
-            new APIDemo.Toy { ToyName = "Hot Wheels Track", Brand = "Mattel", Model = "GGH70" }
-        );
-        db.SaveChanges();
-    }
+    db.Database.EnsureCreated();
 }
 
 app.MapScalarApiReference();
