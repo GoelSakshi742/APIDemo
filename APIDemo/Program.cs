@@ -4,27 +4,33 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddDbContext<ToyDbContext>(options => 
+    options.UseInMemoryDatabase("ToyDb"));
 
-//builder.Services.AddDbContext<ToyDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddDbContext<ToyDbContext>(options => options.UseInMemoryDatabase("ToyDb"));
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Seed some data
+using (var scope = app.Services.CreateScope())
 {
-    app.MapScalarApiReference();
-    app.MapOpenApi();
+    var db = scope.ServiceProvider.GetRequiredService<ToyDbContext>();
+    if (!db.Toys.Any())
+    {
+        db.Toys.AddRange(
+            new APIDemo.Toy { ToyName = "Millennium Falcon", Brand = "LEGO", Model = "75257" },
+            new APIDemo.Toy { ToyName = "Barbie Dreamhouse", Brand = "Mattel", Model = "FHY73" },
+            new APIDemo.Toy { ToyName = "Hot Wheels Track", Brand = "Mattel", Model = "GGH70" }
+        );
+        db.SaveChanges();
+    }
 }
 
+// Enable Swagger in all environments
+app.MapScalarApiReference();
+app.MapOpenApi();
+
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
