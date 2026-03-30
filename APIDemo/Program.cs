@@ -11,7 +11,6 @@ builder.Services.AddDbContext<ToyDbContext>(options =>
 
 var app = builder.Build();
 
-// Seed some data
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ToyDbContext>();
@@ -26,10 +25,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Enable Swagger in all environments
 app.MapScalarApiReference();
 app.MapOpenApi();
-
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
