@@ -1,3 +1,15 @@
+## 🌐 Live Demo
+API deployed via Docker container on Render cloud platform.
+
+Live URL: https://sakshi-apidemo.onrender.com
+
+### Available Endpoints
+- GET /api/Toy — retrieve all toys
+- GET /api/Toy/{id} — get toy by ID
+- POST /api/Toy — create new toy
+- PUT /api/Toy/{id} — update toy
+- DELETE /api/Toy/{id} — delete toy
+
 # 🚀 .NET 9 Web API Demo
 
 A full Web API demonstration using .NET 9 with CRUD operations (GET, POST, PUT, DELETE), Entity Framework with code-first migrations and SQL Server.
