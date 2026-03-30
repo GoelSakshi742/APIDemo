@@ -1,7 +1,7 @@
 ## 🌐 Live Demo
 API deployed via Docker container on Render cloud platform.
 
-Live URL: https://sakshi-apidemo.onrender.com
+Live URL: https://sakshi-apidemo.onrender.com/api/Toy
 
 ### Available Endpoints
 - GET /api/Toy — retrieve all toys
