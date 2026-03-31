@@ -1,12 +1,10 @@
 using APIDemo.Data;
 using APIDemo;
 using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ToyDbContext>(options => 
     options.UseInMemoryDatabase("ToyDb"));
 
@@ -23,9 +21,6 @@ using (var scope = app.Services.CreateScope())
     db.SaveChanges();
 }
 
-app.MapScalarApiReference();
-app.MapOpenApi();
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
